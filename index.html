@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Queue & Token Management System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ================= HEADER / NAVIGATION ================= -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon">🎟️</span>
+      <div>
+        <h1>QueueEase</h1>
+        <p>Queue &amp; Token Management System</p>
+      </div>
+    </div>
+
+    <nav class="nav" id="nav">
+      <button class="nav-btn active" data-view="home">Get Token</button>
+      <button class="nav-btn" data-view="track">Track Token</button>
+      <button class="nav-btn" data-view="board">Display Board</button>
+      <button class="nav-btn" data-view="admin">Admin Panel</button>
+    </nav>
+
+    <div class="clock" id="clock">--:--:--</div>
+  </header>
+
+  <main class="container">
+
+    <!-- ================= VIEW 1 : GET TOKEN ================= -->
+    <section id="view-home" class="view active">
+      <div class="grid-2">
+
+        <!-- Token form -->
+        <div class="card">
+          <h2>Generate Your Token</h2>
+          <p class="muted">Fill in your details, choose a service and get your token instantly.</p>
+
+          <form id="tokenForm" autocomplete="off">
+            <div class="field">
+              <label for="custName">Full Name</label>
+              <input type="text" id="custName" placeholder="e.g. Rahul Sharma" required maxlength="40" />
+            </div>
+
+            <div class="field">
+              <label for="custPhone">Mobile Number</label>
+              <input type="tel" id="custPhone" placeholder="10-digit mobile number" required pattern="[0-9]{10}" maxlength="10" />
+            </div>
+
+            <div class="field">
+              <label>Select Service</label>
+              <div class="service-grid" id="serviceGrid"></div>
+            </div>
+
+            <label class="check">
+              <input type="checkbox" id="custPriority" />
+              <span>Priority (Senior citizen / Differently-abled / Emergency)</span>
+            </label>
+
+            <button type="submit" class="btn primary block">Generate Token</button>
+          </form>
+        </div>
+
+        <!-- Result + live summary -->
+        <div class="stack">
+          <div class="card ticket-card" id="ticketCard" hidden>
+            <div class="ticket" id="ticket">
+              <div class="ticket-head">🎟️ YOUR TOKEN</div>
+              <div class="ticket-number" id="tkNumber">G-001</div>
+              <div class="ticket-service" id="tkService">General Enquiry</div>
+              <div class="ticket-rows">
+                <div><span>Name</span><b id="tkName">-</b></div>
+                <div><span>Position in queue</span><b id="tkPos">-</b></div>
+                <div><span>Estimated wait</span><b id="tkEta">-</b></div>
+                <div><span>Issued at</span><b id="tkTime">-</b></div>
+              </div>
+              <div class="ticket-foot" id="tkPriority" hidden>⭐ PRIORITY TOKEN</div>
+            </div>
+            <div class="btn-row">
+              <button class="btn" id="btnPrint">🖨️ Print</button>
+              <button class="btn" id="btnTrackNow">📍 Track this token</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Live Queue Status</h3>
+            <div id="liveSummary" class="summary-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VIEW 2 : TRACK TOKEN ================= -->
+    <section id="view-track" class="view">
+      <div class="card narrow">
+        <h2>Track Your Token</h2>
+        <p class="muted">Enter your token number to see your live status.</p>
+        <div class="inline-form">
+          <input type="text" id="trackInput" placeholder="e.g. G-001" maxlength="8" />
+          <button class="btn primary" id="btnTrack">Check Status</button>
+        </div>
+        <div id="trackResult" class="track-result"></div>
+      </div>
+    </section>
+
+    <!-- ================= VIEW 3 : DISPLAY BOARD ================= -->
+    <section id="view-board" class="view">
+      <div class="board-head">
+        <h2>Now Serving</h2>
+        <button class="btn" id="btnSound">🔊 Voice: ON</button>
+      </div>
+
+      <div class="counter-board" id="counterBoard"></div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Next in Line</h3>
+          <div id="nextUp" class="chips"></div>
+        </div>
+        <div class="card">
+          <h3>Recently Called</h3>
+          <div id="recentCalls" class="chips"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VIEW 4 : ADMIN PANEL ================= -->
+    <section id="view-admin" class="view">
+
+      <!-- Login -->
+      <div class="card narrow" id="adminLogin">
+        <h2>Admin Login</h2>
+        <p class="muted">Enter the admin PIN to manage counters and queues. (Demo PIN: <b>1234</b>)</p>
+        <div class="inline-form">
+          <input type="password" id="adminPin" placeholder="Enter PIN" maxlength="6" />
+          <button class="btn primary" id="btnLogin">Login</button>
+        </div>
+      </div>
+
+      <!-- Dashboard -->
+      <div id="adminPanel" hidden>
+        <div class="board-head">
+          <h2>Admin Dashboard</h2>
+          <div class="btn-row">
+            <button class="btn" id="btnAddCounter">➕ Add Counter</button>
+            <button class="btn" id="btnExport">⬇️ Export CSV</button>
+            <button class="btn danger" id="btnReset">♻️ Reset Day</button>
+            <button class="btn" id="btnLogout">Logout</button>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats" id="stats"></div>
+
+        <!-- Counters -->
+        <h3 class="section-title">Service Counters</h3>
+        <div class="counter-admin" id="counterAdmin"></div>
+
+        <!-- Waiting queue -->
+        <div class="card">
+          <h3>Waiting Queue</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>#</th><th>Token</th><th>Name</th><th>Phone</th><th>Service</th><th>Waiting</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="queueBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- History -->
+        <div class="card">
+          <h3>Token History</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Token</th><th>Name</th><th>Service</th><th>Counter</th><th>Status</th><th>Issued</th><th>Service time</th></tr>
+              </thead>
+              <tbody id="historyBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <footer class="footer">Queue &amp; Token Management System • HTML + CSS + JavaScript • Data saved in your browser (localStorage)</footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
